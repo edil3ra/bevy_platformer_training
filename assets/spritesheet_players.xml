@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<TextureAtlas imagePath="sprites.png">
-	<!--
-	Created with ShoeBox
-	http://renderhjs.net/shoebox/
-	-->
+<TextureAtlas width="512" height="512">
 	<SubTexture name="playerBlue_dead.png"	x="115"	y="0"	width="45"	height="47" frameX="-0" frameY="-0" frameWidth="45" frameHeight="47"/>
 	<SubTexture name="playerBlue_duck.png"	x="0"	y="294"	width="56"	height="40" frameX="-0" frameY="-0" frameWidth="56" frameHeight="40"/>
 	<SubTexture name="playerBlue_fall.png"	x="156"	y="420"	width="44"	height="54" frameX="-0" frameY="-0" frameWidth="44" frameHeight="54"/>
