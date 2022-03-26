@@ -20,9 +20,9 @@ struct Subs {
     height: f32,
 }
 
-pub struct PlayersSheet(pub Handle<TextureAtlas>);
+struct PlayersSheet(Handle<TextureAtlas>);
 
-pub const CLEAR: Color = Color::rgb(0.1, 0.1, 0.1);
+const CLEAR: Color = Color::rgb(0.1, 0.1, 0.1);
 
 fn main() {
     let height: f32 = 1920.0;
@@ -38,25 +38,10 @@ fn main() {
             ..Default::default()
         })
         .add_plugins(DefaultPlugins)
-        .add_startup_system(spawn_camera)
-        .add_startup_system(load_assets)
+        .add_startup_system_to_stage(StartupStage::PreStartup, load_assets)
+        .add_startup_system_to_stage(StartupStage::Startup, spawn_camera)
+        .add_startup_system_to_stage(StartupStage::Startup, spawn_player)
         .run();
-}
-
-fn spawn_camera(mut commands: Commands) {
-    let mut camera = OrthographicCameraBundle::new_2d();
-
-    //Set the camera to have normalized coordinates of y values -1 to 1
-    // camera.orthographic_projection.top = 1.0;
-    // camera.orthographic_projection.bottom = -1.0;
-
-    // camera.orthographic_projection.right = 1.0 * RESOLUTION;
-    // camera.orthographic_projection.left = -1.0 * RESOLUTION;
-
-    //Force the camera to use our settings
-    camera.orthographic_projection.scaling_mode = ScalingMode::WindowSize;
-
-    commands.spawn_bundle(camera);
 }
 
 fn load_assets(
@@ -79,11 +64,41 @@ fn load_assets(
     for sub in players_xml.subs.iter() {
         players_spritesheet.add_texture(Rect {
             min: Vec2::new(sub.x, sub.y),
-            max: Vec2::new(sub.width, sub.height),
+            max: Vec2::new(sub.x + sub.width, sub.y + sub.height),
         });
     }
 
-    println!("{:?}", players_spritesheet);
     let player_handle = texture_atlases.add(players_spritesheet);
     commands.insert_resource(PlayersSheet(player_handle))
+}
+
+
+fn spawn_camera(mut commands: Commands) {
+    let mut camera = OrthographicCameraBundle::new_2d();
+
+    //Set the camera to have normalized coordinates of y values -1 to 1
+    // camera.orthographic_projection.top = 1.0;
+    // camera.orthographic_projection.bottom = -1.0;
+
+    // camera.orthographic_projection.right = 1.0 * RESOLUTION;
+    // camera.orthographic_projection.left = -1.0 * RESOLUTION;
+
+    //Force the camera to use our settings
+    camera.orthographic_projection.scaling_mode = ScalingMode::WindowSize;
+
+    commands.spawn_bundle(camera);
+}
+
+
+fn spawn_player(mut commands: Commands, player_sheet_handle: Res<PlayersSheet>) {
+    commands.spawn_bundle(SpriteSheetBundle {
+        sprite: TextureAtlasSprite{
+            index: 3,
+            ..TextureAtlasSprite::default()
+        },
+        texture_atlas: player_sheet_handle.0.clone(),
+        transform: Transform::from_scale(Vec3::splat(1.0)),
+        ..SpriteSheetBundle::default()
+    });
+    
 }
